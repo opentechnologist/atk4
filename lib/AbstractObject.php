@@ -27,6 +27,7 @@ abstract class AbstractObject {
     public $name;
     /** Name of the object in owner's element array */
     public $short_name;
+	 public $univ_name;
 
     /** short_name => object hash of children objects */ 
     public $elements = array ();
@@ -138,8 +139,9 @@ abstract class AbstractObject {
         $element->api = $this->api;
         $this->elements[$short_name] = $element;
 
-        $element->name = $this->name . '_' . $short_name;
-        $element->short_name = $short_name;
+        //$element->name = $this->name . '_' . $short_name;
+        //$element->short_name = $short_name;
+        $this->_getNewName($element,$short_name);
         $element->di_config=$di_config;
 
         if ($element instanceof AbstractView) {
@@ -151,6 +153,17 @@ abstract class AbstractObject {
             ->addMoreInfo('object_name',$element->name)
             ->addMoreInfo('class',get_class($element));
         return $element;
+    }
+    function _getNewName(&$element,$short_name) {
+        $element->univ_name = $this->univ_name . '_' . $short_name;
+		  $element->name = $this->name . '_' . $short_name;
+        $element->short_name = $short_name;
+        $newname = str_pad($this->univ_name,128);
+        $newname = sprintf('%x',crc32($newname));
+        $newname = str_repeat('0',8).$newname;
+        $newname = substr($newname,-8);
+        $newname = '_' . $newname . '_' . $short_name;
+        $element->name = $newname;
     }
     /** Find child element by their short name. Use in chaining. Exception if not found. */
     function getElement($short_name, $obligatory = true) {

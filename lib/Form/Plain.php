@@ -32,6 +32,7 @@ class Form_Plain extends HtmlElement {
 		$f=$this->add('HtmlElement',$name,$tag);
 		$f->setElement('input');
 		$f->setAttr('type',$type);
+		$f->setAttr('name',$f->name);
 		$f->setAttr('value',$value);
 		$f->set('');
 		return $f;

@@ -170,7 +170,7 @@ $.extend($.atk4,{
 		// Another file is being loaded.
         this.loading++;
         return $.ajax($.extend({
-            type: post?"POST":"GET",
+            type: post?(data?"POST":"GET"):"GET",
 			dataType: 'html',
             data: data,
 			// We tell the backend that we will verify output for "TIMEOUT" output

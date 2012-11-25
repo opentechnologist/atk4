@@ -41,7 +41,7 @@ class BasicAuth extends AbstractController {
     public $info=false; 
 
     /** By default a static pairs of user=>passwords are used. Add one by calling allow($user,$password) */
-    protected $allowed_credintals=array();
+    protected $allowed_credentials=array();
 
     /** Authentictation creates a form for logging in */
     protected $form=null;
@@ -77,14 +77,14 @@ class BasicAuth extends AbstractController {
             foreach($username as $user=>$pass)$this->allow($user,$pass);
             return $this;
         }
-        $this->allowed_credintals[$username]=$password;
+        $this->allowed_credentials[$username]=$password;
         return $this;
     }
     function check(){
         /*
          * This is a public function you must call when preparations are complete. It will verify
          * if user is logged in or not. If he's not logged in, it will try to verify his
-         * credintals. If he's verified - browser will be redirected and execution terminated.
+         * credentials. If he's verified - browser will be redirected and execution terminated.
          * If not - login form will be displayed and execution terminated.
          *
          * You can be safe, that only allowed users will be able to get past this function inside
@@ -107,7 +107,7 @@ class BasicAuth extends AbstractController {
                 $this->debug("Cookie present, validating it");
                 // Cookie is found, but is it valid?
                 // passwords are always passed encrypted
-                if($this->verifyCredintials(
+                if($this->verifyCredentials(
                             $_COOKIE[$this->name."_username"],
                             $_COOKIE[$this->name."_password"]
                             )){
@@ -208,11 +208,11 @@ class BasicAuth extends AbstractController {
         return $this->info!==false;
     }
     /** Verifies the validity of username and password. The password must be encrypted when called. Redefine to implement your own check */
-    function verifyCredintials($user,$password){
-        if(!$this->allowed_credintals)$this->allowed_credintals=array('demo'=>'demo');
-        $this->debug("verifying credintals: ".$user.' / '.$password." against array: ".print_r($this->allowed_credintals,true));
-        if(!isset($this->allowed_credintals[$user]))return false; // No such user
-        if($this->allowed_credintals[$user]!=$password)return false; // Incorrect password
+    function verifyCredentials($user,$password){
+        if(!$this->allowed_credentials)$this->allowed_credentials=array('demo'=>'demo');
+        $this->debug("verifying credentials: ".$user.' / '.$password." against array: ".print_r($this->allowed_credentials,true));
+        if(!isset($this->allowed_credentials[$user]))return false; // No such user
+        if($this->allowed_credentials[$user]!=$password)return false; // Incorrect password
         return true;
     }
     /** This function is executed after successful login. */
@@ -232,8 +232,8 @@ class BasicAuth extends AbstractController {
     }
     /** Manually force user to be logged in */
     function login($username,$memorize=false){
-        $this->loggedIn($username,isset($this->allowed_credintals[$username])?
-                $this->allowed_credintals[$username]:null,$memorize);
+        $this->loggedIn($username,isset($this->allowed_credentials[$username])?
+                $this->allowed_credentials[$username]:null,$memorize);
         $this->memorize('info',$this->info);
     }
     /** Rederect to index page. Executed after successful login */
@@ -295,7 +295,7 @@ class BasicAuth extends AbstractController {
         $this->memorizeOriginalURL();
         $p=$this->showLoginForm();
         if($this->form->isSubmitted()){
-            if($this->verifyCredintials(
+            if($this->verifyCredentials(
                         $this->form->get('username'),
                         $this->encryptPassword($this->form->get('password'),$this->form->get('username'))
                         )){

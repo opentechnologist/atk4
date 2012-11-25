@@ -32,6 +32,7 @@ class QuickSearch extends Filter {
 	var $region=null;
 	var $region_url=null;
 	public $search_cross=null;
+	public $search_field=null;
 	public $grid;
 
 	function defaultTemplate(){
@@ -61,7 +62,8 @@ class QuickSearch extends Filter {
 		return $this;
 	}
 	function recallAll(){
-		$ff=$this->addField('line','q','');//->onChange()->ajaxFunc($this->setGoFunc());
+		$this->search_field=$this->addField('line','q','');//->onChange()->ajaxFunc($this->setGoFunc());
+		$ff=$this->search_field;
 		parent::recallAll();
 		//$ff->js(true)->univ()->autoChange(1);
 		//$ff->js('change',$this->js()->submit());

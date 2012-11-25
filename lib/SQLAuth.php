@@ -86,8 +86,8 @@ class SQLAuth extends BasicAuth {
 		if($key==$this->password_field)return $this;        // skip password field
 		return parent::addInfo($key,$val);
 	}
-	function verifyCredintials($login,$password){
-		$this->debug("Verifying credintals for $login / $password");
+	function verifyCredentials($login,$password){
+		$this->debug("Verifying credentials for $login / $password");
 
 		$q=clone $this->dq; // in case we are called several times
 		$q->where($this->login_field,$login);

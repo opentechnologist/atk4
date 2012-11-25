@@ -89,7 +89,7 @@ class Grid_Basic extends CompleteLister {
     function getExpanderId(){
         return $_GET['expanded'].'_expandedcontent_'.$_GET['id'];
     }
-    function addColumn($type,$name=null,$descr=null){
+    function addColumn($type,$name=null,$descr=null,$list=null){
         if($name===null){
             $name=$type;
             $type='text';
@@ -104,6 +104,9 @@ class Grid_Basic extends CompleteLister {
             $this->columns[$name]['descr']=$descr;
 
         $this->last_column=$name;
+
+        if(!is_null($list) && !empty($list) && is_array($list))
+            $this->columns[$name]['list']=$list;
 
         $subtypes=explode(',',$type);
         foreach($subtypes as $subtype){
@@ -166,6 +169,42 @@ class Grid_Basic extends CompleteLister {
     }
     function format_number($field){
     }
+	function format_byte($field){
+		$this->setTDParam($field,'align','right');
+		if($this->current_row[$field]>0){
+			$suffix=' B';
+			if($this->current_row[$field]>=1024){
+					$this->current_row[$field]/=1024;
+					$suffix=' KB';
+			}
+			if($this->current_row[$field]>=1024){
+					$this->current_row[$field]/=1024;
+					$suffix=' MB';
+			}
+			if($this->current_row[$field]>=1024){
+					$this->current_row[$field]/=1024;
+					$suffix=' GB';
+			}
+			$this->current_row[$field]=number_format($this->current_row[$field],2);
+			$this->current_row[$field].=$suffix;
+		}
+	}
+	function format_list($field){
+		if($this->columns[$field]['list'])
+			if($this->columns[$field]['list'][$this->current_row[$field]])
+				$this->current_row[$field] = $this->columns[$field]['list'][$this->current_row[$field]];
+	}
+	function format_dropdown($field){
+		$this->format_list($field);
+	}
+	function format_check($field){
+		if($this->columns[$field]['list']&&$this->current_row[$field]){
+			$newvalue=null;
+			foreach(explode(',',$this->current_row[$field]) as $key)
+				$newvalue .= "\t".$this->columns[$field]['list'][$key];
+			$this->current_row[$field] = str_replace("\t",',',trim($newvalue));
+		}
+	}
     function format_text($field){
         $this->current_row[$field] = $this->current_row[$field];
     }
@@ -183,6 +222,9 @@ class Grid_Basic extends CompleteLister {
         if($this->current_row[$field] && $this->current_row[$field]!='N'){
             $this->current_row[$field]='<div align=center><i class="atk-icon atk-icons-nobg atk-icon-basic-check"></i></div>';
         }else $this->current_row[$field]='';
+    }
+    function init_byte($field){
+        @$this->columns[$field]['thparam'].=' style="text-align: right"';
     }
     function init_money($field){
         @$this->columns[$field]['thparam'].=' style="text-align: right"';
